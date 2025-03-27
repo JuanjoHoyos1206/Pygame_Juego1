@@ -1,5 +1,5 @@
 import pygame
-import os  # Importamos os para manejar rutas relativas
+import os  # Importar os para manejar rutas relativas
 
 # Inicializar pygame
 pygame.init()
@@ -11,7 +11,17 @@ pygame.display.set_caption("Sober up")
 
 # Definir colores
 WHITE = (255, 255, 255)
-BLUE = (0, 0, 255)
+
+# Carpeta de recursos
+ASSETS_DIR = "Principal_Tiles"
+
+# Cargar imágenes con rutas relativas
+background = pygame.image.load(os.path.join(ASSETS_DIR, "background1.png"))
+background = pygame.transform.scale(background, (WIDTH, HEIGHT))
+
+cuchillo_WIDHT, cuchillo_HEIGHT = 30, 30
+cuchillo = pygame.image.load(os.path.join(ASSETS_DIR, "cuchillo2.png"))
+cuchillo = pygame.transform.scale(cuchillo, (cuchillo_WIDHT, cuchillo_HEIGHT))
 
 # Propiedades del personaje
 player_size = 30
@@ -20,24 +30,11 @@ player_y = HEIGHT // 2 + 80
 player_speed = 1.5
 isKnifetaken = False
 
-# Diccionario para el estado de las teclas
-keys = {"left": False, "right": False, "up": False, "down": False, "h": False}
-
-# Rutas relativas
-ruta_base = os.path.dirname(__file__)  # Obtiene la carpeta donde está el script
-ruta_background = os.path.join(ruta_base, "background1.png")
-ruta_knife = os.path.join(ruta_base, "cuchillo2.png")
-
-# Cargar imágenes con rutas relativas
-background = pygame.image.load(ruta_background)
-background = pygame.transform.scale(background, (WIDTH, HEIGHT))
-
-cuchillo_WIDHT, cuchillo_HEIGHT = 30, 30
-knife = pygame.image.load(ruta_knife)
-knife = pygame.transform.scale(knife, (cuchillo_WIDHT, cuchillo_HEIGHT))
-
 # Posición inicial del cuchillo
 knife_x, knife_y = 185, 155
+
+# Diccionario para el estado de las teclas
+keys = {"left": False, "right": False, "up": False, "down": False, "h": False}
 
 # Bucle del juego
 running = True
@@ -47,10 +44,11 @@ while running:
     screen.fill(WHITE)  # Limpiar pantalla
     screen.blit(background, (0, 0))
 
+    # Dibujar el cuchillo
     if isKnifetaken:
-        screen.blit(knife, (player_x + 2, player_y - 30))
+        screen.blit(cuchillo, (player_x + 2, player_y - 30))
     else:
-        screen.blit(knife, (knife_x, knife_y))
+        screen.blit(cuchillo, (knife_x, knife_y))
 
     # Manejo de eventos
     for event in pygame.event.get():
@@ -66,14 +64,8 @@ while running:
             if event.key in (pygame.K_DOWN, pygame.K_s):
                 keys["down"] = True
             if event.key == pygame.K_h:
-                is_near_knife = (
-                    player_x + player_size >= knife_x
-                    and player_x <= knife_x + cuchillo_WIDHT
-                    and player_y + player_size >= knife_y
-                    and player_y <= knife_y + cuchillo_HEIGHT
-                )
+                is_near_knife = player_x + player_size >= knife_x and player_x <= knife_x + cuchillo_WIDHT and player_y + player_size >= knife_y and player_y <= knife_y + cuchillo_HEIGHT
                 if is_near_knife and not isKnifetaken:
-                    keys["h"] = True
                     isKnifetaken = True
                 elif isKnifetaken:
                     isKnifetaken = False
@@ -88,27 +80,24 @@ while running:
                 keys["up"] = False
             if event.key in (pygame.K_DOWN, pygame.K_s):
                 keys["down"] = False
-            if event.key == pygame.K_h:
-                keys["h"] = False
 
     # Actualizar posición del personaje
-    ruta_player = os.path.join(ruta_base, "playerdown.png")  # Por defecto, mirando hacia abajo
-
+    ruta = os.path.join(ASSETS_DIR, "playerdown.png")
     if keys["left"] and player_x > 1:
         player_x -= player_speed
-        ruta_player = os.path.join(ruta_base, "playerleft.png")
+        ruta = os.path.join(ASSETS_DIR, "playerleft.png")
     if keys["right"] and player_x < WIDTH - player_size:
         player_x += player_speed
-        ruta_player = os.path.join(ruta_base, "playerright.png")
+        ruta = os.path.join(ASSETS_DIR, "playerright.png")
     if keys["up"] and player_y > 1:
         player_y -= player_speed
-        ruta_player = os.path.join(ruta_base, "playerup.png")
+        ruta = os.path.join(ASSETS_DIR, "playerup.png")
     if keys["down"] and player_y < HEIGHT - player_size:
         player_y += player_speed
-        ruta_player = os.path.join(ruta_base, "playerdown.png")
+        ruta = os.path.join(ASSETS_DIR, "playerdown.png")
 
-    # Dibujar personaje con ruta relativa
-    player_img = pygame.image.load(ruta_player)
+    # Dibujar personaje
+    player_img = pygame.image.load(ruta)
     player_img = pygame.transform.scale(player_img, (player_size, player_size))
     screen.blit(player_img, (player_x, player_y))
 
