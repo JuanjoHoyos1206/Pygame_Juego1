@@ -14,8 +14,8 @@ BLUE = (0, 0, 255)
 
 # Propiedades del personaje
 player_size = 30
-player_x = WIDTH // 2
-player_y = HEIGHT // 2
+player_x = WIDTH // 2 - 14
+player_y = HEIGHT // 2 + 80
 player_speed = 1.5
 isKnifetaken = False
 
@@ -29,7 +29,7 @@ clock = pygame.time.Clock()
 background = pygame.image.load("c:\\Users\\Hoyos\\Desktop\\Pygame_Juego1\\background1.png")
 background = pygame.transform.scale(background, (WIDTH, HEIGHT))
 
-cuchillo_x, cuchillo_y = 185, 155
+knife_x, knife_y = 185, 155
 cuchillo_WIDHT, cuchillo_HEIGHT = 30, 30
 cuchillo = pygame.image.load("c:\\Users\\Hoyos\\Desktop\\Pygame_Juego1\\cuchillo2.png")
 cuchillo = pygame.transform.scale(cuchillo, (cuchillo_WIDHT, cuchillo_HEIGHT))
@@ -37,8 +37,10 @@ cuchillo = pygame.transform.scale(cuchillo, (cuchillo_WIDHT, cuchillo_HEIGHT))
 while running:
     screen.fill(WHITE)  # Limpiar pantalla
     screen.blit(background, (0,0))
-    if not isKnifetaken:
-        screen.blit(cuchillo, (cuchillo_x, cuchillo_y))
+    if isKnifetaken:
+        screen.blit(cuchillo, (player_x + 2, player_y - 30))
+    else:
+        screen.blit(cuchillo, (knife_x,knife_y))
     # Manejo de eventos
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -53,10 +55,14 @@ while running:
             if event.key in (pygame.K_DOWN, pygame.K_s):
                 keys["down"] = True
             if event.key == pygame.K_h:
-                if player_x + player_size >= cuchillo_x and player_x <= cuchillo_x + cuchillo_WIDHT:
-                    if player_y + player_size >= cuchillo_y and player_y <= cuchillo_y + cuchillo_HEIGHT:
-                        keys["h"] = True
-                        isKnifetaken = True
+                is_near_knife = player_x + player_size >= knife_x and player_x <= knife_x + cuchillo_WIDHT and player_y + player_size >= knife_y and player_y <= knife_y + cuchillo_HEIGHT
+                if is_near_knife and not isKnifetaken:
+                    keys["h"] = True
+                    isKnifetaken = True
+                elif isKnifetaken:
+                    isKnifetaken = False
+                    knife_x, knife_y = player_x, player_y
+
         elif event.type == pygame.KEYUP:
             if event.key in (pygame.K_LEFT, pygame.K_a):
                 keys["left"] = False
@@ -83,8 +89,6 @@ while running:
     if keys["down"] and player_y < HEIGHT - player_size:
         player_y += player_speed
         ruta = "c:\\Users\\Hoyos\\Desktop\\Pygame_Juego1\\playerdown.png"
-    if keys["h"]:
-        print("Agarraste el objeto")
     # Dibujar personaje
    # pygame.draw.rect(screen, BLUE, (player_x, player_y, player_size, player_size))
 
