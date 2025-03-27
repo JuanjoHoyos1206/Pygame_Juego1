@@ -1,4 +1,5 @@
 import pygame
+import os  # Importamos os para manejar rutas relativas
 
 # Inicializar pygame
 pygame.init()
@@ -22,25 +23,35 @@ isKnifetaken = False
 # Diccionario para el estado de las teclas
 keys = {"left": False, "right": False, "up": False, "down": False, "h": False}
 
+# Rutas relativas
+ruta_base = os.path.dirname(__file__)  # Obtiene la carpeta donde está el script
+ruta_background = os.path.join(ruta_base, "background1.png")
+ruta_knife = os.path.join(ruta_base, "cuchillo2.png")
+
+# Cargar imágenes con rutas relativas
+background = pygame.image.load(ruta_background)
+background = pygame.transform.scale(background, (WIDTH, HEIGHT))
+
+cuchillo_WIDHT, cuchillo_HEIGHT = 30, 30
+knife = pygame.image.load(ruta_knife)
+knife = pygame.transform.scale(knife, (cuchillo_WIDHT, cuchillo_HEIGHT))
+
+# Posición inicial del cuchillo
+knife_x, knife_y = 185, 155
+
 # Bucle del juego
 running = True
 clock = pygame.time.Clock()
 
-background = pygame.image.load("c:\\Users\\Hoyos\\Desktop\\Pygame_Juego1\\background1.png")
-background = pygame.transform.scale(background, (WIDTH, HEIGHT))
-
-knife_x, knife_y = 185, 155
-cuchillo_WIDHT, cuchillo_HEIGHT = 30, 30
-cuchillo = pygame.image.load("c:\\Users\\Hoyos\\Desktop\\Pygame_Juego1\\cuchillo2.png")
-cuchillo = pygame.transform.scale(cuchillo, (cuchillo_WIDHT, cuchillo_HEIGHT))
-
 while running:
     screen.fill(WHITE)  # Limpiar pantalla
-    screen.blit(background, (0,0))
+    screen.blit(background, (0, 0))
+
     if isKnifetaken:
-        screen.blit(cuchillo, (player_x + 2, player_y - 30))
+        screen.blit(knife, (player_x + 2, player_y - 30))
     else:
-        screen.blit(cuchillo, (knife_x,knife_y))
+        screen.blit(knife, (knife_x, knife_y))
+
     # Manejo de eventos
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -55,7 +66,12 @@ while running:
             if event.key in (pygame.K_DOWN, pygame.K_s):
                 keys["down"] = True
             if event.key == pygame.K_h:
-                is_near_knife = player_x + player_size >= knife_x and player_x <= knife_x + cuchillo_WIDHT and player_y + player_size >= knife_y and player_y <= knife_y + cuchillo_HEIGHT
+                is_near_knife = (
+                    player_x + player_size >= knife_x
+                    and player_x <= knife_x + cuchillo_WIDHT
+                    and player_y + player_size >= knife_y
+                    and player_y <= knife_y + cuchillo_HEIGHT
+                )
                 if is_near_knife and not isKnifetaken:
                     keys["h"] = True
                     isKnifetaken = True
@@ -76,27 +92,25 @@ while running:
                 keys["h"] = False
 
     # Actualizar posición del personaje
-    ruta = "c:\\Users\\Hoyos\\Desktop\\Pygame_Juego1\\playerdown.png"
+    ruta_player = os.path.join(ruta_base, "playerdown.png")  # Por defecto, mirando hacia abajo
+
     if keys["left"] and player_x > 1:
         player_x -= player_speed
-        ruta = "c:\\Users\\Hoyos\\Desktop\\Pygame_Juego1\\playerleft.png"
+        ruta_player = os.path.join(ruta_base, "playerleft.png")
     if keys["right"] and player_x < WIDTH - player_size:
         player_x += player_speed
-        ruta = "c:\\Users\\Hoyos\\Desktop\\Pygame_Juego1\\playerright.png"
+        ruta_player = os.path.join(ruta_base, "playerright.png")
     if keys["up"] and player_y > 1:
         player_y -= player_speed
-        ruta = "c:\\Users\\Hoyos\\Desktop\\Pygame_Juego1\\playerup.png"
+        ruta_player = os.path.join(ruta_base, "playerup.png")
     if keys["down"] and player_y < HEIGHT - player_size:
         player_y += player_speed
-        ruta = "c:\\Users\\Hoyos\\Desktop\\Pygame_Juego1\\playerdown.png"
-    # Dibujar personaje
-   # pygame.draw.rect(screen, BLUE, (player_x, player_y, player_size, player_size))
+        ruta_player = os.path.join(ruta_base, "playerdown.png")
 
-    player_img = pygame.image.load(ruta)
+    # Dibujar personaje con ruta relativa
+    player_img = pygame.image.load(ruta_player)
     player_img = pygame.transform.scale(player_img, (player_size, player_size))
     screen.blit(player_img, (player_x, player_y))
-      
-
 
     pygame.display.flip()  # Actualizar pantalla
     clock.tick(60)  # Limitar FPS a 60
