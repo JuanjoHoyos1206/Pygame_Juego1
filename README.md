@@ -28,9 +28,9 @@
 git clone https://github.com/tu-usuario/sober-up.git
 cd sober-up
 
-### Instala las dependencias
+#Instala las dependencias
 pip install pygame
 
-### Ejecuta el juego
+#Ejecuta el juego
 python main.py
 
